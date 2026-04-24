@@ -1,2 +1,19 @@
 export * from "./generated/api";
-export * from "./generated/types";
+export type {
+  AccessibilityIssue,
+  AccessibilityIssueSeverity,
+  ActivityItem,
+  Document,
+  DocumentKeyTermsItem,
+  DocumentStatus,
+  DocumentSummary,
+  ErrorResponse,
+  GenerateDocumentAudioBodyVoice,
+  HealthStatus,
+  ReadingLevel,
+  SourceType,
+  Stats,
+  StatsDocumentsBySourceTypeItem,
+  StatsScoreDistributionItem,
+  StructuredChunk,
+} from "./generated/types";
