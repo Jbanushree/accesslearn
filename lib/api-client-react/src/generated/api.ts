@@ -24,6 +24,7 @@ import type {
   ErrorResponse,
   GenerateDocumentAudioBody,
   HealthStatus,
+  SharedDocument,
   SimplifyDocumentBody,
   Stats,
   TranscribeDocumentAudioBody,
@@ -959,6 +960,94 @@ export const useTranscribeDocumentAudio = <
 > => {
   return useMutation(getTranscribeDocumentAudioMutationOptions(options));
 };
+
+/**
+ * @summary Public read-only view of a document via share token
+ */
+export const getGetSharedDocumentUrl = (token: string) => {
+  return `/api/shared/${token}`;
+};
+
+export const getSharedDocument = async (
+  token: string,
+  options?: RequestInit,
+): Promise<SharedDocument> => {
+  return customFetch<SharedDocument>(getGetSharedDocumentUrl(token), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetSharedDocumentQueryKey = (token: string) => {
+  return [`/api/shared/${token}`] as const;
+};
+
+export const getGetSharedDocumentQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSharedDocument>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  token: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSharedDocument>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetSharedDocumentQueryKey(token);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSharedDocument>>
+  > = ({ signal }) => getSharedDocument(token, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!token,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSharedDocument>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetSharedDocumentQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSharedDocument>>
+>;
+export type GetSharedDocumentQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Public read-only view of a document via share token
+ */
+
+export function useGetSharedDocument<
+  TData = Awaited<ReturnType<typeof getSharedDocument>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  token: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSharedDocument>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetSharedDocumentQueryOptions(token, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Dashboard statistics

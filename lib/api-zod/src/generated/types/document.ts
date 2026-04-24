@@ -35,6 +35,7 @@ export interface Document {
   issues: AccessibilityIssue[];
   /** @nullable */
   altText?: string | null;
+  shareToken: string;
   createdAt: Date;
   updatedAt: Date;
 }

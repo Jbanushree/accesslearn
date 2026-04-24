@@ -24,8 +24,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { 
   BookOpen, Headphones, Captions, ShieldAlert, Sparkles, AlertTriangle, 
-  CheckCircle, Info, FileAudio, FileText, Loader2, Copy, Play, Pause 
+  CheckCircle, Info, FileAudio, FileText, Loader2, Copy, Play, Pause, Share2, ExternalLink
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useAccessibility } from "@/lib/accessibility-provider";
 
 export default function DocumentDetail() {
@@ -192,6 +201,7 @@ export default function DocumentDetail() {
             {document.title}
           </h1>
         </div>
+        <ShareDialog token={document.shareToken} />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -564,3 +574,42 @@ export default function DocumentDetail() {
 
 // Just importing ImageIcon here
 import { Image as ImageIcon } from "lucide-react";
+
+function ShareDialog({ token }: { token: string }) {
+  const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}shared/${token}`;
+  const copy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Share link copied to clipboard");
+  };
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <Share2 className="w-4 h-4" /> Share with student
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share this material</DialogTitle>
+          <DialogDescription>
+            Anyone with this link can read the accessible version — no sign-in required. The faculty controls and accessibility audit stay private.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex gap-2 mt-2">
+          <Input value={shareUrl} readOnly className="font-mono text-xs" />
+          <Button onClick={copy} className="gap-2 shrink-0">
+            <Copy className="w-4 h-4" /> Copy
+          </Button>
+        </div>
+        <a
+          href={shareUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-primary inline-flex items-center gap-1 hover:underline"
+        >
+          Open public view <ExternalLink className="w-3 h-3" />
+        </a>
+      </DialogContent>
+    </Dialog>
+  );
+}

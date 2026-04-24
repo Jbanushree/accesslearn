@@ -19,6 +19,8 @@ export * from "./generateDocumentAudioBody";
 export * from "./generateDocumentAudioBodyVoice";
 export * from "./healthStatus";
 export * from "./readingLevel";
+export * from "./sharedDocument";
+export * from "./sharedDocumentKeyTermsItem";
 export * from "./simplifyDocumentBody";
 export * from "./sourceType";
 export * from "./stats";

@@ -20,7 +20,9 @@ import {
   AutoFixDocumentParams,
   TranscribeDocumentAudioParams,
   TranscribeDocumentAudioBody,
+  GetSharedDocumentParams,
 } from "@workspace/api-zod";
+import { randomUUID } from "node:crypto";
 import {
   ocrFromImageDataUrl,
   simplifyText,
@@ -51,6 +53,7 @@ function toDocumentDto(row: DocumentRow) {
     accessibilityScore: row.accessibilityScore,
     issues: row.issues ?? [],
     altText: row.altText ?? null,
+    shareToken: row.shareToken,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -113,6 +116,7 @@ router.post("/documents", async (req, res): Promise<void> => {
       sourceType,
       status: "processing",
       originalText: text ?? "",
+      shareToken: randomUUID(),
     })
     .returning();
 
@@ -183,6 +187,33 @@ router.post("/documents", async (req, res): Promise<void> => {
         .where(eq(documentsTable.id, created.id));
     }
   })();
+});
+
+router.get("/shared/:token", async (req, res): Promise<void> => {
+  const params = GetSharedDocumentParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [row] = await db
+    .select()
+    .from(documentsTable)
+    .where(eq(documentsTable.shareToken, params.data.token));
+  if (!row) {
+    res.status(404).json({ error: "Shared document not found" });
+    return;
+  }
+  res.json({
+    title: row.title,
+    sourceType: row.sourceType,
+    readingLevel: row.readingLevel,
+    readingText:
+      row.simplifiedText || row.extractedText || row.originalText || "",
+    summary: row.summary ?? null,
+    keyTerms: row.keyTerms ?? [],
+    audioDataUrl: row.audioDataUrl ?? null,
+    captions: row.captions ?? [],
+  });
 });
 
 router.get("/documents/:id", async (req, res): Promise<void> => {

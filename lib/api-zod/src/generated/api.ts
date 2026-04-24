@@ -90,6 +90,7 @@ export const GetDocumentResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -152,6 +153,7 @@ export const SimplifyDocumentResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -208,6 +210,7 @@ export const GenerateDocumentAudioResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -259,6 +262,7 @@ export const GenerateDocumentCaptionsResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -310,6 +314,7 @@ export const AnalyzeDocumentResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -361,6 +366,7 @@ export const AutoFixDocumentResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
 });
@@ -416,8 +422,41 @@ export const TranscribeDocumentAudioResponse = zod.object({
     }),
   ),
   altText: zod.string().nullish(),
+  shareToken: zod.string(),
   createdAt: zod.coerce.date(),
   updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Public read-only view of a document via share token
+ */
+export const GetSharedDocumentParams = zod.object({
+  token: zod.coerce.string(),
+});
+
+export const GetSharedDocumentResponse = zod.object({
+  title: zod.string(),
+  sourceType: zod.enum(["pdf", "image", "text", "audio"]),
+  readingLevel: zod.enum(["elementary", "middle", "high", "original"]),
+  readingText: zod.string(),
+  summary: zod.string().nullish(),
+  keyTerms: zod.array(
+    zod.object({
+      term: zod.string(),
+      definition: zod.string(),
+    }),
+  ),
+  audioDataUrl: zod.string().nullish(),
+  captions: zod.array(
+    zod.object({
+      index: zod.number(),
+      heading: zod.string().nullish(),
+      text: zod.string(),
+      signLanguageGloss: zod.string().nullish(),
+      startMs: zod.number(),
+      endMs: zod.number(),
+    }),
+  ),
 });
 
 /**

@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Library from "@/pages/library";
 import Upload from "@/pages/upload";
 import DocumentDetail from "@/pages/document-detail";
+import Shared from "@/pages/shared";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -32,16 +33,29 @@ function Router() {
   );
 }
 
+function isSharedRoute() {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  return window.location.pathname.startsWith(`${base}/shared/`);
+}
+
 function App() {
+  const sharedView = isSharedRoute();
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="accessify-theme">
         <AccessibilityProvider>
           <TooltipProvider>
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Layout>
-                <Router />
-              </Layout>
+              {sharedView ? (
+                <Switch>
+                  <Route path="/shared/:token" component={Shared} />
+                  <Route component={NotFound} />
+                </Switch>
+              ) : (
+                <Layout>
+                  <Router />
+                </Layout>
+              )}
             </WouterRouter>
             <Toaster />
           </TooltipProvider>

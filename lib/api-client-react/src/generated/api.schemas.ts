@@ -110,8 +110,27 @@ export interface Document {
   issues: AccessibilityIssue[];
   /** @nullable */
   altText?: string | null;
+  shareToken: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export type SharedDocumentKeyTermsItem = {
+  term: string;
+  definition: string;
+};
+
+export interface SharedDocument {
+  title: string;
+  sourceType: SourceType;
+  readingLevel: ReadingLevel;
+  readingText: string;
+  /** @nullable */
+  summary?: string | null;
+  keyTerms: SharedDocumentKeyTermsItem[];
+  /** @nullable */
+  audioDataUrl?: string | null;
+  captions: StructuredChunk[];
 }
 
 export type StatsDocumentsBySourceTypeItem = {

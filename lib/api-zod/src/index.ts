@@ -16,4 +16,5 @@ export type {
   StatsDocumentsBySourceTypeItem,
   StatsScoreDistributionItem,
   StructuredChunk,
+  SharedDocument,
 } from "./generated/types";

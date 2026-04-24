@@ -51,6 +51,7 @@ export const documentsTable = pgTable("documents", {
   accessibilityScore: integer("accessibility_score").notNull().default(0),
   issues: jsonb("issues").$type<AccessibilityIssue[]>().notNull().default([]),
   altText: text("alt_text"),
+  shareToken: text("share_token").notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
