@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Image as ImageIcon, AudioLines, Type, UploadCloud, Loader2 } from "lucide-react";
+import { FileText, Image as ImageIcon, AudioLines, Type, UploadCloud, Loader2, Captions } from "lucide-react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
