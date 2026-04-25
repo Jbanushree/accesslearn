@@ -4,7 +4,7 @@ import { useGetStats, useGetRecentActivity } from "@workspace/api-client-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Activity, CheckCircle, AlertTriangle, FileAudio, FileImage, File } from "lucide-react";
+import { FileText, Plus, Activity, CheckCircle, AlertTriangle, FileAudio, FileImage, File, Type } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function StatsCard({ title, value, description, icon: Icon, loading }: any) {
