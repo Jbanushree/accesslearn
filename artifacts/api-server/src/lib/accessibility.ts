@@ -23,9 +23,44 @@ function safeJsonParse<T>(text: string, fallback: T): T {
   }
 }
 
+function detectMimeFromDataUrl(dataUrl: string): string {
+  const match = dataUrl.match(/^data:([^;,]+)[;,]/i);
+  return match?.[1]?.toLowerCase() ?? "";
+}
+
+function dataUrlToBuffer(dataUrl: string): Buffer {
+  const commaIdx = dataUrl.indexOf(",");
+  if (commaIdx === -1) return Buffer.from("");
+  const meta = dataUrl.slice(0, commaIdx);
+  const data = dataUrl.slice(commaIdx + 1);
+  if (meta.includes(";base64")) return Buffer.from(data, "base64");
+  return Buffer.from(decodeURIComponent(data), "utf-8");
+}
+
+async function extractTextFromPdf(dataUrl: string): Promise<string> {
+  const { extractText, getDocumentProxy } = await import("unpdf");
+  const buf = dataUrlToBuffer(dataUrl);
+  const pdf = await getDocumentProxy(new Uint8Array(buf));
+  const { text } = await extractText(pdf, { mergePages: false });
+  const pages = Array.isArray(text) ? text : [text];
+  return pages
+    .map((p, i) => `## Page ${i + 1}\n\n${(p ?? "").trim()}`)
+    .filter((s) => s.trim().length > 0)
+    .join("\n\n---\n\n");
+}
+
 export async function ocrFromImageDataUrl(
   imageDataUrl: string,
 ): Promise<string> {
+  const mime = detectMimeFromDataUrl(imageDataUrl);
+  const isPdf = mime === "application/pdf";
+
+  if (isPdf) {
+    const extracted = await extractTextFromPdf(imageDataUrl);
+    if (extracted.trim().length > 0) return extracted;
+    return "[No selectable text found in this PDF — it may be a scanned/image-only document.]";
+  }
+
   const response = await openai.chat.completions.create({
     model: TEXT_MODEL,
     max_completion_tokens: 8192,
